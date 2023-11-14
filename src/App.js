@@ -1,23 +1,44 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Day from './Day';
+import Week from './Week';
+import Month from './Month';
+
 
 function App() {
+  const [DayButton, setDayButton] = useState(false);
+  const [WeekButton, setWeekButton] = useState(false);
+  const [MonthButton, setMonthButton] = useState(false);
+
+  const dButton = () => {
+    setDayButton(true)
+    setWeekButton(false)
+    setMonthButton(false)
+  }
+  const wButton = () => {
+    setWeekButton(true)
+    setDayButton(false)
+    setMonthButton(false)
+  }
+  const mButton = () => {
+    setMonthButton(true)
+    setDayButton(false)
+    setWeekButton(false)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>To Do List</h1>
+      <div>
+      <button onClick={dButton} >Day</button>
+      <button onClick={wButton} >Week</button>
+      <button onClick={mButton} >Month</button>
+      </div>
+      
+      {DayButton == true ? <Day /> : ''}
+      {WeekButton == true ? <Week /> : ''}
+      {MonthButton == true ? <Month /> : ''}
+      
     </div>
   );
 }
