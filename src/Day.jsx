@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-let tempId = Date.now(); //임시아이디 값
+let tempId = Date.now();
 
 function TodoList({ list, handleCheckChange, listClick, deleteButton, isCompleted }) {
     return (
         <ul>
-            {list.map((item, index) => (
+            {list && list.map((item, index) => (
                 <li key={item.id}>
                     <input
                         type="checkbox"
@@ -28,10 +28,11 @@ function TodoList({ list, handleCheckChange, listClick, deleteButton, isComplete
 function Day() {
     const [showWrite, setShowWrite] = useState(false);
     const [title, setTitle] = useState("")
-    const [time, setTime] = useState("")
     const [content, setContent] = useState("")
     const [incompleteList, setIncompleteList] = useState([]);
     const [completedList, setCompletedList] = useState([]);
+    const [dateTime, setDateTime] = useState("");
+    const [sortOrder, setSortOrder] = useState('asc');
 
     const addEmptyItem = () => {
         const newItem = {
@@ -49,6 +50,12 @@ function Day() {
         setShowWrite(true)
         setTitle(list[index].title)
         setContent(list[index].content)
+        setDateTime(formatDateTime(list[index].checkTime))
+    };
+
+    const formatDateTime = (dateTime) => {
+        // 문자열 형태의 날짜 그대로 반환
+        return dateTime || "";
     };
 
     const cancelButton = () => {
@@ -61,9 +68,9 @@ function Day() {
     const contentHandler = (event) => {
         setContent(event.target.value);
     }
-    const timeHandler = (event) => {
-    setTime(event.target.value);
-    }
+    const dateTimeHandler = (event) => {
+        setDateTime(event.target.value + ":00");
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,8 +83,11 @@ function Day() {
                 });
                 if (response.ok) {
                     const result = await response.json();
+                    result.incompleteItems.sort((a, b) => new Date(a.checkTime).getTime() - new Date(b.checkTime).getTime());
+                    result.completedItems.sort((a, b) => new Date(a.checkTime).getTime() - new Date(b.checkTime).getTime());
                     setIncompleteList(result.incompleteItems);
                     setCompletedList(result.completedItems);
+
                 } else {
                     console.error(`HTTP 오류 발생: ${response.status}`);
                 }
@@ -91,14 +101,14 @@ function Day() {
 
     const saveButton = async () => {
         if (title.trim() === "" || content.trim() === "") {
-            alert("제목과 내용을 작성해주세요.")
+            alert("제목과 내용을 작성해주세요.");
             return;
         }
 
         const data = {
             title: title,
             content: content,
-            time: time
+            time: dateTime
         };
 
         try {
@@ -108,35 +118,39 @@ function Day() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data)
-            })
+            });
+
             if (response.ok) {
-                console.log(response);
                 console.log("저장에 성공했습니다.");
-                setShowWrite(false);
-        
                 const result = await response.json();
                 const savedTodo = result.todo;
-        
-                setIncompleteList(prevList => {
-                    const newList = [...prevList];
-                    const index = newList.findIndex(item => item.id === tempId);
-                    if (index !== -1) {
-                        newList[index].id = savedTodo.id;
-                        newList[index].title = savedTodo.title;
-                        newList[index].content = savedTodo.content;
-                        newList[index].temporary = false
-                    }
-                    return newList;
-                });
-                tempId = Date.now();
-                console.log("저장에 성공했습니다.");
-                setShowWrite(false);
+
+                updateList(savedTodo, incompleteList, setIncompleteList);
             } else {
                 console.log("저장 중 오류가 발생했습니다.");
             }
         } catch (error) {
             console.error('오류 발생:', error);
         }
+    };
+
+    const updateList = (updatedItem, list, setList) => {
+        setList((prevList) => {
+            const newList = [...prevList];
+            const index = newList.findIndex(item => item.id === tempId);
+
+            if (index !== -1) {
+                newList[index].id = updatedItem.id;
+                newList[index].title = updatedItem.title;
+                newList[index].content = updatedItem.content;
+                newList[index].temporary = false;
+            }
+
+            return newList;
+        });
+
+        tempId = Date.now();
+        setShowWrite(false);
     };
 
     const deleteButton = async (index, isCompleted) => {
@@ -167,17 +181,21 @@ function Day() {
     };
 
     const handleCheckChange = async (item, index, isChecked) => {
+        // 체크 여부에 따라 소스 및 타겟 리스트를 갱신
         const updatedSourceList = isChecked ? completedList : incompleteList;
         const updatedTargetList = isChecked ? incompleteList : completedList;
         const setSourceList = isChecked ? setCompletedList : setIncompleteList;
         const setTargetList = isChecked ? setIncompleteList : setCompletedList;
 
-        const updatedItem = { ...item, completed: !isChecked };
+        // 업데이트된 아이템 생성
+        const updatedItem = { ...item, completed: !isChecked, checkTime: new Date() };
+        // 소스 리스트에서 업데이트된 아이템 제거
         const updatedList = updatedSourceList.filter((_, i) => i !== index);
 
+        // 소스 리스트 갱신
         setSourceList(updatedList);
-        setTargetList([...updatedTargetList, updatedItem]);
 
+        // 데이터베이스에 PUT 요청 보내기
         if (!item.temporary) {
             try {
                 const response = await fetch(`http://localhost:8080/put/${item.id}`, {
@@ -187,6 +205,7 @@ function Day() {
                     },
                     body: JSON.stringify(updatedItem)
                 });
+
                 if (!response.ok) {
                     throw new Error(`HTTP 오류 발생: ${response.status}`);
                 }
@@ -194,7 +213,54 @@ function Day() {
                 console.error('오류 발생:', error);
             }
         }
+
+        // 타겟 리스트 갱신
+        setTargetList((prevList) => {
+            // 새로운 아이템 추가
+            const tempList = [...prevList, updatedItem];
+
+            // 데이터베이스에서 최신 데이터를 비동기적으로 불러오기
+            const fetchData = async () => {
+                try {
+                    const response = await fetch('http://localhost:8080/itemlist', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (response.ok) {
+                        // 최신 데이터로 미완료 및 완료 리스트 정렬 및 갱신
+                        const result = await response.json();
+                        result.incompleteItems.sort((a, b) => new Date(a.checkTime) - new Date(b.checkTime));
+                        result.completedItems.sort((a, b) => new Date(a.checkTime) - new Date(b.checkTime));
+                        setIncompleteList(result.incompleteItems);
+                        setCompletedList(result.completedItems);
+                    } else {
+                        console.error(`HTTP 오류 발생: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('오류 발생:', error);
+                }
+            };
+
+            // 비동기적으로 데이터베이스에서 최신 데이터를 불러온 후 정렬 수행
+            fetchData().then(() => {
+                console.log('Before Sort:', prevList);
+                console.log('After Sort:', tempList);
+
+                // 정렬
+                tempList.sort((a, b) => {
+                    const dateA = new Date(a.checkTime);
+                    const dateB = new Date(b.checkTime);
+                    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+                });
+
+                return tempList;
+            });
+        });
     };
+
 
     return (
         <div>
@@ -221,7 +287,14 @@ function Day() {
                     <>
                         <input type="text" placeholder="Title" value={title} onChange={titleHandler} />
                         <br />
-                        <input type="date" placeholder="시간을 입력해주세요." value={time} onChange={timeHandler} />
+                        <input type="datetime-local" placeholder="날짜와 시간을 입력해주세요." value={dateTime} onChange={dateTimeHandler} />
+                        {/* <div>
+                            <label htmlFor="hour">시:</label>
+                            <input type="number" id="hour" name="hour" min="0" max="23" value={hour} onChange={handleHourChange} />
+
+                            <label htmlFor="minute">분:</label>
+                            <input type="number" id="minute" name="minute" min="0" max="59" value={minute} onChange={handleMinuteChange} />
+                        </div> */}
                         <textarea value={content} onChange={contentHandler} />
                     </>
                 )}
