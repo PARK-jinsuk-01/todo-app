@@ -93,7 +93,7 @@ function Day() {
                 }
             } catch (error) {
                 console.error('오류 발생:', error);
-            }
+            }  
         };
 
         fetchData();
