@@ -1,4 +1,35 @@
 #root {
   width: 70%;
   margin: 0 auto;
+
+}
+html {
+  background: linear-gradient(180deg, #b993d6 24%, #7AA1D2);
+  height: 100%;
+}
+form {
+  margin-top: 80px;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.5);
+}
+.btContainer {
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+}
+.btContainer button {
+  border: none;
+  padding: 0;
+  background: none;
+  font-size: 18px;
+  line-height: 1;
+  color: black;
+  letter-spacing: 0;
+  font-weight: bold;
+  width: 150px;
+  height: 35px;
+  box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }

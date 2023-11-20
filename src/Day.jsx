@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import './Day.css';
 
 let tempId = Date.now();
 
@@ -13,11 +14,11 @@ function TodoList({ list, handleCheckChange, listClick, deleteButton, isComplete
                         onChange={() => handleCheckChange(item, index, item.completed)}
                     />
                     <a href="#" onClick={() => listClick(index, isCompleted)}>{item.title}</a>
-                    <button onClick={(e) => {
+                    <button className="dbt" onClick={(e) => {
                         e.stopPropagation();
                         deleteButton(index, isCompleted);
                     }}>
-                        삭제
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </li>
             ))}
@@ -93,7 +94,7 @@ function Day() {
                 }
             } catch (error) {
                 console.error('오류 발생:', error);
-            }  
+            }
         };
 
         fetchData();
@@ -299,9 +300,9 @@ function Day() {
                     </>
                 )}
 
-                <div>
+                <div className="addBtForm">
                     {!showWrite ? (
-                        <button onClick={addEmptyItem}>+</button>
+                        <button className="addbt" onClick={addEmptyItem}><i class="fa-solid fa-plus"></i></button>
                     ) : (
                         <>
                             <button onClick={cancelButton}>취소</button>

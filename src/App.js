@@ -27,9 +27,9 @@ function App() {
   }
 
   return (
-    <div>
+    <div className='form'>
       <h1>To Do List</h1>
-      <div>
+      <div className='btContainer'>
       <button onClick={dButton} >Day</button>
       <button onClick={wButton} >Week</button>
       <button onClick={mButton} >Month</button>
