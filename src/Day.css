@@ -3,12 +3,27 @@
     border: none;
 }
 .dbt i {
-    font-size: 1rem;
+    font-size: 20px;
     background: none;
+    position: relative;
+    bottom: 5px;
 }
 li {
     list-style: none;
     text-decoration: none;
+}
+.boxbox li a{
+    display: inline-block;
+    max-height: 1.5rem;
+    max-width: 10.8rem;
+    min-width: 10.8rem;
+    overflow: hidden;
+    padding-top: 5px;
+    margin-top: 15px;
+}
+.check{
+    position: relative;
+    bottom: 5px;
 }
 a {
     font-size: large;
@@ -16,14 +31,40 @@ a {
     color: black;
     margin-left: 7px;
     margin-right: 10px;
+    
 }
 .addBtForm{
     width: 100%;
 }
+
+.btset button{
+    float: right;
+    position: relative;
+    right: 0;
+    background: none;
+    border: 1px solid black;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    margin: auto;
+    width: 120px;
+    height: 30px;
+    box-shadow: 10px 10px 10px rgba(0,0,0,0.3);
+}
+#savebt{
+    margin-right: 10px;
+}
+#canclebt {
+    margin-right: 10px;
+}
 .addbt{
-    width: 100%;
+    width: 80%;
     height: 40px;
-    margin: 0 auto;
+    /* 마진 오토가 안먹어서 우선 해놈 나중에 수정 */
+    left: 50%;
+    position: relative;
+    transform: translateX(-50%);
+    /* */
     font-size: 1rem;
     background: none;
     border: 2px solid black;
@@ -32,4 +73,78 @@ a {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+
+.wrap{
+    width: 100%;
+}
+.container{
+    width: 100%;
+}
+.article{
+    padding-top: 30px;
+    width: 80%;
+    margin: 0 auto;
+
+}
+.title{
+    position: relative;
+    padding-bottom: 3px;
+    width: 100%;
+    height: 20px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background: #c9daf9;
+    font-size: large;
+    font-weight: bold;
+    border: 1px solid;
+    padding: 12px;
+    box-sizing: border-box;
+
+}
+.date{
+    padding-bottom: 5px;
+    width: 100%;
+    height: 20px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background: #c9daf9;
+    font-size: large;
+    font-weight: bold;
+    border: 1px solid;
+    margin-top: 5px;
+    padding: 12px ;
+    box-sizing: border-box;
+
+}
+.content{
+    width: 100%;
+    height: 300px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background: #c9daf9;
+    font-weight: bold;
+    border: 1px solid;
+    margin-top: 5px;
+    padding: 12px ;
+    box-sizing: border-box;
+}
+.boxbox {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 0;
+}
+.boxbox li {
+    background-color: #E5CFF7;
+    padding: 0 10px 10px 10px;
+    overflow: hidden;
+    box-shadow: 10px 10px 10px rgba(0,0,0,0.3);
+    max-height: 7rem;
 }

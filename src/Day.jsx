@@ -4,29 +4,35 @@ import './Day.css';
 let tempId = Date.now();
 
 function TodoList({ list, handleCheckChange, listClick, deleteButton, isCompleted }) {
+    const formatTime = (timeString) => {
+        const options = { hour: 'numeric', minute: 'numeric' };
+        return new Date(timeString).toLocaleTimeString(undefined, options);
+    };
     return (
-        <ul>
+        <ul className="boxbox">
             {list && list.map((item, index) => (
-                <li key={item.id}>
-                    <input
-                        type="checkbox"
-                        checked={item.completed}
-                        onChange={() => handleCheckChange(item, index, item.completed)}
-                    />
-                    <a href="#" onClick={() => listClick(index, isCompleted)}>{item.title}</a>
-                    <button className="dbt" onClick={(e) => {
-                        e.stopPropagation();
-                        deleteButton(index, isCompleted);
-                    }}>
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </li>
+                
+                    <li key={item.id}>
+                        <input
+                            type="checkbox" className= 'check'
+                            checked={item.completed}
+                            onChange={() => handleCheckChange(item, index, item.completed)}
+                        />
+                        <a href="#" onClick={() => listClick(index, isCompleted)}>{item.title}</a>
+                        <button className="dbt" onClick={(e) => {
+                            e.stopPropagation();
+                            deleteButton(index, isCompleted);
+                        }}>
+                            <i className="fa-solid fa-xmark"></i>
+                        </button>
+                        <a>{formatTime(item.checkTime)}</a>
+                    </li>
             ))}
         </ul>
     );
 }
 
-function Day() {
+function Day({isD}) {
     const [showWrite, setShowWrite] = useState(false);
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
@@ -34,6 +40,20 @@ function Day() {
     const [completedList, setCompletedList] = useState([]);
     const [dateTime, setDateTime] = useState("");
     const [sortOrder, setSortOrder] = useState('asc');
+
+    useEffect(()=>{
+        
+        if (isD){
+        setShowWrite(false)
+        } else{
+        // setShowWrite(true)
+        // false로 변경후 day를 다시 누르면 false로 변경했던 list가 재소환됨 수정
+        // true에서 day를 클릭했을때 false로 바뀌는데 한번 더 누를경우 안 먹히게
+        setShowWrite(false)
+
+        }
+
+    },[isD])
 
     const addEmptyItem = () => {
         const newItem = {
@@ -88,7 +108,7 @@ function Day() {
                     result.completedItems.sort((a, b) => new Date(a.checkTime).getTime() - new Date(b.checkTime).getTime());
                     setIncompleteList(result.incompleteItems);
                     setCompletedList(result.completedItems);
-
+                    console.log(result);
                 } else {
                     console.error(`HTTP 오류 발생: ${response.status}`);
                 }
@@ -264,8 +284,8 @@ function Day() {
 
 
     return (
-        <div>
-            <div>
+        <div className="wrap">
+            <div className="container">
                 {!showWrite && (
                     <>
                         <TodoList
@@ -284,29 +304,26 @@ function Day() {
                         />
                     </>
                 )}
-                {showWrite && (
-                    <>
-                        <input type="text" placeholder="Title" value={title} onChange={titleHandler} />
-                        <br />
-                        <input type="datetime-local" placeholder="날짜와 시간을 입력해주세요." value={dateTime} onChange={dateTimeHandler} />
-                        {/* <div>
-                            <label htmlFor="hour">시:</label>
-                            <input type="number" id="hour" name="hour" min="0" max="23" value={hour} onChange={handleHourChange} />
-
-                            <label htmlFor="minute">분:</label>
-                            <input type="number" id="minute" name="minute" min="0" max="59" value={minute} onChange={handleMinuteChange} />
-                        </div> */}
-                        <textarea value={content} onChange={contentHandler} />
-                    </>
-                )}
-
+                <div className="article">
+                    {showWrite && (
+                        <>
+                            <input className="title" type="text" placeholder="Title" value={title} onChange={titleHandler} />
+                            <br />
+                            <input className="date" type="datetime-local" placeholder="날짜와 시간을 입력해주세요." value={dateTime} onChange={dateTimeHandler} />
+                            <br />
+                            <textarea className="content" value={content} onChange={contentHandler} />
+                        </>
+                    )}
+                </div>
                 <div className="addBtForm">
                     {!showWrite ? (
                         <button className="addbt" onClick={addEmptyItem}><i class="fa-solid fa-plus"></i></button>
                     ) : (
                         <>
-                            <button onClick={cancelButton}>취소</button>
-                            <button onClick={saveButton}>저장</button>
+                            <div className="btset">
+                                <button id="canclebt" onClick={cancelButton}>취소</button>
+                                <button id="savebt" onClick={saveButton}>저장</button>
+                            </div>
                         </>
                     )}
                 </div>
