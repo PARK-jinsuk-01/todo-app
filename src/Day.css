@@ -21,6 +21,9 @@ li {
     padding-top: 5px;
     margin-top: 15px;
 }
+.boxbox li {
+    cursor: pointer;
+}
 .check{
     position: relative;
     bottom: 5px;
@@ -104,6 +107,18 @@ a {
     box-sizing: border-box;
 
 }
+.mainDate{
+    /* background: #c9daf9; */
+    position: absolute;
+    top: 30px;
+    right: 335px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 10%;
+    height: 20px;
+  }
 .date{
     padding-bottom: 5px;
     width: 100%;

@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Day from './Day';
 import Week from './Week';
 import Month from './Month';
-
 
 function App() {
   const [DayButton, setDayButton] = useState(false);
@@ -11,28 +10,29 @@ function App() {
   const [MonthButton, setMonthButton] = useState(false);
   const [isD, setIsD] = useState(false);
 
+
   const dButton = () => {
-    setDayButton(true)
-    setWeekButton(false)
-    setMonthButton(false)
+    setDayButton(true);
+    setWeekButton(false);
+    setMonthButton(false);
     if (isD) {
-      setIsD(false)
-
+      setIsD(false);
     } else {
-      setIsD(true)
+      setIsD(true);
     }
+  };
 
-  }
   const wButton = () => {
-    setWeekButton(true)
-    setDayButton(false)
-    setMonthButton(false)
-  }
+    setWeekButton(true);
+    setDayButton(false);
+    setMonthButton(false);
+  };
+
   const mButton = () => {
-    setMonthButton(true)
-    setDayButton(false)
-    setWeekButton(false)
-  }
+    setMonthButton(true);
+    setDayButton(false);
+    setWeekButton(false);
+  };
 
   return (
     <div className='form'>
@@ -49,8 +49,5 @@ function App() {
     </div>
   );
 }
-<script>
-
-</script>
 
 export default App;

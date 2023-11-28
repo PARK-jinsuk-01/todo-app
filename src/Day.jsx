@@ -11,28 +11,28 @@ function TodoList({ list, handleCheckChange, listClick, deleteButton, isComplete
     return (
         <ul className="boxbox">
             {list && list.map((item, index) => (
-                
-                    <li key={item.id}>
-                        <input
-                            type="checkbox" className= 'check'
-                            checked={item.completed}
-                            onChange={() => handleCheckChange(item, index, item.completed)}
-                        />
-                        <a href="#" onClick={() => listClick(index, isCompleted)}>{item.title}</a>
-                        <button className="dbt" onClick={(e) => {
-                            e.stopPropagation();
-                            deleteButton(index, isCompleted);
-                        }}>
-                            <i className="fa-solid fa-xmark"></i>
-                        </button>
-                        <a>{formatTime(item.checkTime)}</a>
-                    </li>
+
+                <li className="listFrom" key={item.id} onClick={() => listClick(index, isCompleted)}>
+                    <input
+                        type="checkbox" className='check'
+                        checked={item.completed}
+                        onChange={() => handleCheckChange(item, index, item.completed)}
+                    />
+                    <a href="#" >{item.title}</a>
+                    <button className="dbt" onClick={(e) => {
+                        e.stopPropagation();
+                        deleteButton(index, isCompleted);
+                    }}>
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                    <a>{formatTime(item.checkTime)}</a>
+                </li>
             ))}
         </ul>
     );
 }
 
-function Day({isD}) {
+function Day({ isD }) {
     const [showWrite, setShowWrite] = useState(false);
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
@@ -41,19 +41,13 @@ function Day({isD}) {
     const [dateTime, setDateTime] = useState("");
     const [sortOrder, setSortOrder] = useState('asc');
 
-    useEffect(()=>{
-        
-        if (isD){
-        setShowWrite(false)
-        } else{
-        // setShowWrite(true)
-        // false로 변경후 day를 다시 누르면 false로 변경했던 list가 재소환됨 수정
-        // true에서 day를 클릭했을때 false로 바뀌는데 한번 더 누를경우 안 먹히게
-        setShowWrite(false)
-
+    useEffect(() => {
+        if (isD) {
+            setShowWrite(false)
+        } else {
+            setShowWrite(false)
         }
-
-    },[isD])
+    }, [isD])
 
     const addEmptyItem = () => {
         const newItem = {
@@ -119,6 +113,43 @@ function Day({isD}) {
 
         fetchData();
     }, [showWrite]);
+
+    // 달력선택값
+    const [selectedDate, setSelectedDate] = useState('');
+
+    const callHandler = (event) => {
+        const selectedDate = event.target.value;
+        setSelectedDate(selectedDate);
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/itemlist?maindate=${selectedDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+                console.log(selectedDate);
+                if (response.ok) {
+                    const result = await response.json();
+                    result.incompleteItems.sort((a, b) => new Date(a.checkTime).getTime() - new Date(b.checkTime).getTime());
+                    result.completedItems.sort((a, b) => new Date(a.checkTime).getTime() - new Date(b.checkTime).getTime());
+                    setIncompleteList(result.incompleteItems);
+                    setCompletedList(result.completedItems);
+                    console.log(result);
+                } else {
+                    console.error(`HTTP 오류 발생: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('오류 발생:', error);
+            }
+        };
+
+        fetchData();  // useEffect 내부에서 fetchData 호출
+    }, [selectedDate]);  // useEffect에 selectedDate를 의존성으로 추가
+
 
     const saveButton = async () => {
         if (title.trim() === "" || content.trim() === "") {
@@ -284,7 +315,11 @@ function Day({isD}) {
 
 
     return (
+
         <div className="wrap">
+            <div>
+                <input className="mainDate" type="date" onChange={callHandler}></input>
+            </div>
             <div className="container">
                 {!showWrite && (
                     <>
